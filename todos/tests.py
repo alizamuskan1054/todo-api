@@ -49,6 +49,18 @@ class TodoAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.todo1.refresh_from_db()
         self.assertTrue(self.todo1.completed)
+    def test_create_todo_with_priority(self):
+        """Naya field: priority sahi se save honi chahiye"""
+        payload = {"title": "Urgent task", "priority": "high"}
+        response = self.client.post(self.list_url, payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["priority"], "high")
+
+    def test_default_priority_is_medium(self):
+        """Priority na di jaye to default 'medium' honi chahiye"""
+        payload = {"title": "Normal task"}
+        response = self.client.post(self.list_url, payload)
+        self.assertEqual(response.data["priority"], "medium")
 
     def test_delete_todo(self):
         """DELETE /api/todos/{id}/ -> todo remove ho jaye"""
